@@ -1,0 +1,36 @@
+#importing required libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from seaborn import regression
+from autots import AutoTS
+import pickle
+#setting plotting style
+sns.set()
+plt.style.use('seaborn-whitegrid')
+#validating data
+data = pd.read_csv("Dogecoin.csv")
+print("Shape of Dataset is: ",data.shape,"\n")
+print(data.head())
+#visualizing data in plot view
+data.dropna()
+plt.figure(figsize=(10, 4))
+plt.title("DogeCoin Price INR")
+plt.xlabel("Date")
+plt.ylabel("Close")
+plt.plot(data["Close"])
+plt.show()
+#applying ml model
+model = AutoTS(forecast_length=10, frequency='infer', ensemble='simple', drop_data_older_than_periods=200)
+model = model.fit(data, date_col='Date', value_col='Close', id_col=None)
+#predicting the values 
+prediction = model.predict()
+#printing the tested values  
+forecast = prediction.forecast
+print("DogeCoin Price Prediction")
+print(forecast)
+model_results=model.results()
+pickle.dump(forecast,open('model.pkl','wb'))
+model=pickle.load(open('model.pkl','rb'))
+
